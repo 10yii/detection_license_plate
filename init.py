@@ -20,11 +20,11 @@ def main():
 
     # if coco.json not exist, construct 
     register_coco_instances("license_plate_train", {},
-                        "/dataset/license_plates/annotation/annotation.coco.json",
+                        "/dataset/license_plates/annotation/train_annotation.coco.json",
                         "/dataset/license_plates/images/")
 
-    register_coco_instances("license_plate_test", {},
-                        "/dataset/license_plates/annotation/annotation.coco.json",
+    register_coco_instances("license_plate_valid", {},
+                        "/dataset/license_plates/annotation/valid_annotation.coco.json",
                         "/dataset/license_plates/images/")
     
     #t
@@ -37,7 +37,7 @@ def train():
     cfg = get_cfg()
     cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
     cfg.DATASETS.TRAIN = ("license_plate_train",)
-    cfg.DATASETS.TEST = ("license_plate_test",)
+    cfg.DATASETS.TEST = ("license_plate_valid",)
     cfg.DATALOADER.NUM_WORKERS = 4
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")  # Let training initialize from model zoo
     cfg.SOLVER.IMS_PER_BATCH = 4
@@ -55,7 +55,6 @@ def train():
     trainer.resume_or_load(resule=False)
     trainer.train()
 
-def test():
 
 if __name__ == '__main__':
     main()
