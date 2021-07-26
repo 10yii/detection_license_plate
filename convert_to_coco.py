@@ -25,21 +25,17 @@ def convert2coco():
 
     annotations_path    = config['TRAIN_ANNOTATIONS_PATH']
     images_path         = config['TRAIN_IMAGES_PATH']
+    
     train_annotation_file = config['TRAIN_COCO_JSON_FILE']
     valid_annotation_file = config['VALID_COCO_JSON_FILE'] 
+    test_annotation_file  = config['TEST_COCO_JSON_FILE']
     # 
     # Refresh coco json file
     if os.path.isfile(train_annotation_file):
         os.remove(train_annotation_file)
 
 
-    dataset = {
-        "info": {},
-        "licenses": [],
-        "categories": [],
-        "images": [],
-        "annotations": []
-    }
+
 
     # get category list 
     lst_name = get_category_list(annotations_path)
@@ -71,17 +67,22 @@ def convert2coco():
             im_li.append(img_data)
 
     train_imgs = im_li[:int(config['VALID_RATIO']* len(im_li))]
-    valid_imgs = im_li[int(config['VALID_RATIO'] * len(im_li)):]
+    valid_imgs = im_li[int(config['VALID_RATIO'] * len(im_li)):int((config['TEST_RATIO'] + config['VALID_RATIO'])* len(im_li))]
+    test_imgs  = im_li[int((config['TEST_RATIO'] + config['VALID_RATIO'])* len(im_li)):]
 
 
     train_annos = []
     valid_annos = []
+    test_annos  = []
     # train set
     for im in train_imgs:
         train_annos.join(extract_annos(im,annotations_path))
 
     for im in valid_imgs:
         valid_annos.join(extract_annos(im,annotations_path))
+
+    for im in test_imgs:
+        test_annos.join(extract_annos(im, annotations_path))
 
 
     train_dataset = {
@@ -100,11 +101,22 @@ def convert2coco():
         "annotations": valid_annos
     }
 
+    test_dataset = {
+        "info": {},
+        "licenses": [],
+        "categories": category_list,
+        "images": test_imgs,
+        "annotations": test_annos
+    }
+
     with open(train_annotation_file, 'w') as outfile:
         json.dump(train_dataset, outfile)
     
     with open(valid_annotation_file, 'w') as outfile:
         json.dump(valid_dataset, outfile)
+
+    with open(test_annotation_file, 'w') as outfile:
+        json.dump(test_dataset, outfile)
 
     # if not exist, construct json file
     
