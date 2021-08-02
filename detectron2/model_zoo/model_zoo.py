@@ -136,9 +136,11 @@ def get_config_file(config_path):
     Returns:
         str: the real path to the config file.
     """
+    print(config_path)
     cfg_file = pkg_resources.resource_filename(
-        "detectron2.model_zoo", os.path.join("configs", config_path)
+        "detectron2.model_zoo", os.path.join("/../../configs", config_path)
     )
+    print(cfg_file)
     if not os.path.exists(cfg_file):
         raise RuntimeError("{} not available in Model Zoo!".format(config_path))
     return cfg_file
