@@ -83,7 +83,7 @@ def evaluation():
                         metadata=test_metadata,
                         scale=1.0
                         )
-            out = v.draw_dataset_dict(imageName)
+            out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
             cv2.imwrite('./result/' + path.split('/')[-1], out.get_image()[:, :, ::-1])
 
 
